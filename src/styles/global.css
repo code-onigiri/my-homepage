@@ -1,1 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap");
 @import "tailwindcss";
+
+:root {
+  --bg: #f7f4ef;
+  --surface: #ffffff;
+  --text: #1d1d1b;
+  --muted: #5e5c57;
+  --accent: #2f5e4f;
+  --border: rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c1016;
+    --surface: #121821;
+    --text: #e6e9ee;
+    --muted: #9fa7b2;
+    --accent: #7bc3a7;
+    --border: rgba(255, 255, 255, 0.08);
+  }
+}
+
+html.dark {
+  --bg: #0c1016;
+  --surface: #121821;
+  --text: #e6e9ee;
+  --muted: #9fa7b2;
+  --accent: #7bc3a7;
+  --border: rgba(255, 255, 255, 0.08);
+}
+
+html, body {
+  height: 100%;
+  background: radial-gradient(circle at 12% 18%, rgba(47, 94, 79, 0.06), transparent 22%),
+    radial-gradient(circle at 88% 32%, rgba(47, 94, 79, 0.08), transparent 24%),
+    var(--bg);
+  color: var(--text);
+  font-family: "Manrope", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Segoe UI", system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.01em;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
+}
+
+main {
+  margin: 0;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem;
+}
+
+h1 {
+  font-size: clamp(2.2rem, 3vw, 2.7rem);
+}
+
+h2 {
+  font-size: clamp(1.5rem, 2.1vw, 1.9rem);
+}
+
+h3 {
+  font-size: 1.2rem;
+  margin-top: 1rem;
+}
+
+p, ul, ol {
+  margin: 0 0 1.05rem;
+  max-width: 62ch;
+}
+
+ul, ol {
+  padding-left: 1.35rem;
+  color: var(--muted);
+}
+
+li + li {
+  margin-top: 0.35rem;
+}
+
+a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: none;
+  transition: color 140ms ease;
+}
+
+a:hover {
+  color: color-mix(in srgb, var(--accent) 80%, var(--text));
+}
+
+blockquote {
+  border-left: 2px solid color-mix(in srgb, var(--accent) 55%, var(--border));
+  padding-left: 1rem;
+  color: var(--muted);
+  margin: 0 0 1.25rem;
+}
+
+.muted { color: var(--muted); }
+
+img { max-width: 100%; height: auto; border-radius: 10px; }

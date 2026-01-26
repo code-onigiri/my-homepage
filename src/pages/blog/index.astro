@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<BaseLayout title="Blog — code-onigiri">
+  <section class="flex flex-col gap-4 sm:gap-6 py-6 sm:py-10">
+    <div>
+      <h1>Blog</h1>
+      <p class="muted">テスト用のサンプル記事を2本置いています。</p>
+    </div>
+
+    <ul class="list-none m-0 p-0 flex flex-col gap-5">
+      {posts.map((post) => (
+        <li class="border-b border-[color:var(--border)] pb-4 last:border-b-0 last:pb-0">
+          <a class="no-underline" href={`/blog/${post.slug}/`}>
+            <div class="text-sm muted">{post.data.date.toISOString().slice(0, 10)}</div>
+            <h2 class="m-0 text-xl font-semibold">{post.data.title}</h2>
+            {post.data.description && <p class="muted m-0">{post.data.description}</p>}
+          </a>
+
+          {post.data.tags.length > 0 && (
+            <div class="mt-2 flex flex-wrap gap-2 text-xs">
+              {post.data.tags.map((tag) => (
+                <span class="px-2 py-1 rounded-full" style="border:1px solid var(--border); color: var(--muted);">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

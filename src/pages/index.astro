@@ -1,17 +1,26 @@
 ---
-
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Home — code-onigiri">
+
+  <section class="hero">
+    <h1>code-onigiriのホームページ</h1>
+  </section>
+
+  <section class="border-l-3 border-[var(--border)] pl-4">
+    <h2>なんやねんこいつ(自己紹介)</h2>
+    <p>名古屋県在住の学生プログラマー</p>
+    <p>おにぎり、というか食べ物全般が好き。</p>
+    <p>好きな言語：Rust,Java,TypeScript,C++</p>
+    <p>好きなフレームワークとかライブラリソフト系列：React,Svelte,Alpine.js/NeoForge/Godot,bevy</p>
+    <p>好きなゲーム：Minecraft,Factorio.....ないか...</p>
+    <p>何かになれるようでなれない人間（似非哲学）</p>
+    <p>新しい物大好きマン、oxclintが最近のお気に入り。</p>
+    <p>特徴：コード書くの遅いし、しょっちゅうAIに頼ってるし、詭弁ばっか振りかざす人、あと広く浅くしか理解していない。</p>
+  </section>
+
+  <!-- TODO:最新のblogポスト五件 -->
+
+
+</BaseLayout>
