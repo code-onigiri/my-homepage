@@ -7,6 +7,8 @@ import alpinejs from '@astrojs/alpinejs';
 
 import icon from 'astro-icon';
 
+import cloudflare from '@astrojs/cloudflare';
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
@@ -28,9 +30,12 @@ export default defineConfig({
 
   // パフォーマンス最適化
   output: 'static',
+
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp'
     }
-  }
+  },
+
+  adapter: cloudflare()
 });
