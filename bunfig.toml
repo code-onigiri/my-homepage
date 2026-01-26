@@ -1,0 +1,21 @@
+# bun設定ファイル - ビルド・開発サーバーの最適化
+
+[run]
+shell = "bash"
+
+[install]
+# インストール速度の最適化
+optional = false
+
+[test]
+root = "."
+
+[build]
+# バンドラー設定（将来的にrolldownに対応可能）
+minify = true
+sourcemap = "none"
+splitting = true
+
+[dev]
+# 開発サーバーの最適化
+hot = true

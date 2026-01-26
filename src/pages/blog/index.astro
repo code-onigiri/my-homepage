@@ -3,34 +3,164 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
 const posts = (await getCollection("blog")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const allTags = Array.from(new Set(posts.flatMap((post) => post.data.tags || []))).sort();
+const postsData = posts.map((post) => ({
+  slug: post.slug,
+  title: post.data.title,
+  description: post.data.description || "",
+  date: post.data.date.toISOString(),
+  dateStr: post.data.date.toISOString().slice(0, 10),
+  tags: post.data.tags || [],
+}));
 ---
 <BaseLayout title="Blog — code-onigiri">
-  <section class="flex flex-col gap-4 sm:gap-6 py-6 sm:py-10">
+  <section class="flex flex-col gap-4 sm:gap-6 py-6 sm:py-10" x-data=`blogFilter(${JSON.stringify(postsData)})`>
     <div>
       <h1>Blog</h1>
-      <p class="muted">テスト用のサンプル記事を2本置いています。</p>
+      <p class="muted">恐らく、更新されるであろうブログ（）</p>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      {/* 検索とフィルターコントロール */}
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div class="flex-1">
+          <label for="search" class="block text-sm font-medium mb-1">タイトル/説明で検索</label>
+          <input
+            type="text"
+            id="search"
+            placeholder="キーワードを入力..."
+            x-model="searchQuery"
+            class="w-full px-3 py-2 border border-[color:var(--border)] rounded-md"
+            style="background: var(--bg); color: var(--text);"
+          />
+        </div>
+        <div>
+          <label for="sort" class="block text-sm font-medium mb-1">並び替え</label>
+          <select
+            id="sort"
+            x-model="sortOrder"
+            class="px-3 py-2 border border-[color:var(--border)] rounded-md"
+            style="background: var(--bg); color: var(--text);"
+          >
+            <option value="desc">新しい順</option>
+            <option value="asc">古い順</option>
+          </select>
+        </div>
+      </div>
+
+      {/* タグフィルター */}
+      {allTags.length > 0 && (
+        <div>
+          <p class="text-sm font-medium mb-2">タグで絞り込む</p>
+          <div class="flex flex-wrap gap-2">
+            {allTags.map((tag) => (
+              <button
+                type="button"
+                @click={`toggleTag('${tag}')`}
+                :class={`selectedTags.includes('${tag}') ? 'active-tag' : 'inactive-tag'`}
+                class="px-3 py-1 rounded-full text-xs transition-colors"
+                style="border: 1px solid var(--border);"
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
 
     <ul class="list-none m-0 p-0 flex flex-col gap-5">
-      {posts.map((post) => (
+      <template x-for="post in filteredPosts" :key="post.slug">
         <li class="border-b border-[color:var(--border)] pb-4 last:border-b-0 last:pb-0">
-          <a class="no-underline" href={`/blog/${post.slug}/`}>
-            <div class="text-sm muted">{post.data.date.toISOString().slice(0, 10)}</div>
-            <h2 class="m-0 text-xl font-semibold">{post.data.title}</h2>
-            {post.data.description && <p class="muted m-0">{post.data.description}</p>}
+          <a class="no-underline" :href="`/blog/${post.slug}/`">
+            <div class="text-sm muted" x-text="post.dateStr"></div>
+            <h2 class="m-0 text-xl font-semibold" x-text="post.title"></h2>
+            <template x-if="post.description">
+              <p class="muted m-0" x-text="post.description"></p>
+            </template>
           </a>
 
-          {post.data.tags.length > 0 && (
+          <template x-if="post.tags.length > 0">
             <div class="mt-2 flex flex-wrap gap-2 text-xs">
-              {post.data.tags.map((tag) => (
+              <template x-for="tag in post.tags" :key="tag">
                 <span class="px-2 py-1 rounded-full" style="border:1px solid var(--border); color: var(--muted);">
-                  {tag}
+                  <span x-text="tag"></span>
                 </span>
-              ))}
+              </template>
             </div>
-          )}
+          </template>
         </li>
-      ))}
+      </template>
     </ul>
+
+    <template x-if="filteredPosts.length === 0">
+      <p class="text-center text-muted py-8">記事が見つかりません</p>
+    </template>
   </section>
 </BaseLayout>
+
+<style>
+  .active-tag {
+    background-color: var(--border);
+    color: var(--text);
+  }
+  .inactive-tag {
+    background-color: transparent;
+    color: var(--muted);
+  }
+  .inactive-tag:hover {
+    background-color: var(--bg-secondary, rgba(255, 255, 255, 0.05));
+  }
+</style>
+
+<script>
+  window.blogFilter = function(postsData) {
+    return {
+      searchQuery: "",
+      selectedTags: [],
+      sortOrder: "desc",
+      allPosts: postsData,
+
+      get filteredPosts() {
+        let filtered = [...this.allPosts];
+
+        // タグでフィルター
+        if (this.selectedTags.length > 0) {
+          filtered = filtered.filter((post) =>
+            this.selectedTags.some((tag) => post.tags.includes(tag))
+          );
+        }
+
+        // 検索クエリでフィルター
+        if (this.searchQuery) {
+          const query = this.searchQuery.toLowerCase();
+          filtered = filtered.filter(
+            (post) =>
+              post.title.toLowerCase().includes(query) ||
+              post.description.toLowerCase().includes(query)
+          );
+        }
+
+        // ソート
+        filtered.sort((a, b) => {
+          if (this.sortOrder === "desc") {
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+          } else {
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
+          }
+        });
+
+        return filtered;
+      },
+
+      toggleTag(tag) {
+        const index = this.selectedTags.indexOf(tag);
+        if (index > -1) {
+          this.selectedTags.splice(index, 1);
+        } else {
+          this.selectedTags.push(tag);
+        }
+      },
+    };
+  };
+</script>

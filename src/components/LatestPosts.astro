@@ -1,0 +1,48 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+type Props = {
+  posts: CollectionEntry<"blog">[];
+  limit?: number;
+};
+
+const { posts, limit = 5 } = Astro.props as Props;
+
+const sortedPosts = [...posts]
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, limit);
+
+const serializedPosts = sortedPosts.map((post) => ({
+  slug: post.slug,
+  date: post.data.date.toISOString().slice(0, 10),
+  title: post.data.title,
+  description: post.data.description ?? null,
+}));
+---
+<section
+  class=""
+  x-data={`{ posts: ${JSON.stringify(serializedPosts)} }`}
+>
+  <h2>最新の記事</h2>
+  <template x-if="posts.length">
+    <ul class="list-none m-0 p-0 flex flex-col gap-4">
+      <template x-for="post in posts" :key="post.slug">
+        <li>
+          <a class="no-underline" :href="`/blog/${post.slug}/`">
+            <div class="text-sm muted" x-text="post.date"></div>
+            <h3 class="m-0 mt-1 text-lg font-semibold" x-text="post.title"></h3>
+            <template x-if="post.description">
+              <p class="muted m-0 mt-1" x-text="post.description"></p>
+            </template>
+          </a>
+        </li>
+      </template>
+    </ul>
+  </template>
+  <template x-if="!posts.length">
+    <p class="muted">まだ記事がありません。</p>
+  </template>
+  <div class="mt-4">
+    <a href="/blog/" class="text-sm">すべての記事を見る →</a>
+  </div>
+</section>

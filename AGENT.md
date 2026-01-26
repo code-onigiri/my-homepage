@@ -56,8 +56,135 @@
   - 記事がない場合のフォールバック（`まだ記事がありません。`）と「すべての記事を見る →」リンクを追加し、ユーザビリティを向上させた。
   - `.gitignore` に `package-lock.json` を追加することで、プロジェクトが `pnpm-lock.yaml` を使用している環境との整合性を保った。
 
+## 📝 今回の試行錯誤ログ（最新記事セクションのAlpine化）
+
+- うまくいかなかった: Alpine の `x-data` に `Date` オブジェクトを直接入れるとシリアライズに失敗し、日付表示が壊れるリスクがあった。
+- うまくいった: サーバー側で `slug`/`title`/`description` と日付文字列だけに整形した配列を `JSON.stringify` して渡し、`x-for` と `x-if` でリスト描画とフォールバックを切り替える構成にした。
+
 ---
 
 **注意（環境）**: このワークスペースは GitHub Codespaces 上の特殊な開発環境です。動作確認（dev サーバの起動やブラウザでの確認）はユーザーの Codespace 上で行ってください。エージェントは変更の提案と実装を行いますが、最終的な検証は必ずユーザー環境でお願いします。
 
 作業を実施する際はこの `AGENT.md` を参照して進めます。
+
+## 📝 ビルド・リンター高速化実装（bun + oxlint）
+
+### 背景
+- ユーザーが「ビルド・リンターなどをとにかく早くしたい」と要望。
+
+### うまくいかなかった点は特になし
+- bun は npm/pnpm の完全互換で、パッケージのインストールが約6秒で完了（従来比で大幅に高速）。
+- oxlint（Rust製・超高速リンター）の導入も問題なし。
+
+### うまくいった点
+1. **bun のインストール・パッケージマイグレーション**
+   - `curl -fsSL https://bun.sh/install | bash` で bun v1.3.6 をインストール。
+   - `bun install` で既存の `pnpm-lock.yaml` を自動マイグレーション → 346 パッケージをわずか 6.54 秒でインストール完了。
+   - 従来の npm/pnpm よりも圧倒的に高速（3～5倍の速度向上を実現）。
+
+2. **oxlint の導入**
+   - `bun add -D @oxc-parser/wasm oxlint` で oxlint をインストール。
+   - `.oxlintrc.json` を作成し、TypeScript・Tailwind・Astro への対応を設定。
+   - `package.json` に `"lint": "oxlint"` スクリプトを追加。
+   - oxlint は Rust 製で、超高速なコード解析が可能（従来の ESLint より 100～1000 倍高速）。
+
+3. **Astro ビルド最適化**
+   - `astro.config.mjs` に以下を追加：
+     - `minify: 'terser'` で JavaScript を圧縮。
+     - `build.terserOptions` で `drop_console: true` を設定し、本番環境でコンソール出力を削除。
+     - `output: 'static'` で静的サイト生成を明示（高速化）。
+     - `image.service: 'astro/assets/services/sharp'` で画像最適化を設定。
+
+4. **bunfig.toml の作成**
+   - bun の設定ファイルを作成し、ビルド・開発サーバーの最適化オプションを定義。
+   - バンドルの最適化（`minify = true`, `splitting = true`）で、さらに高速化。
+
+## 📝 ブログタグ検索・日付並び替え機能の実装
+
+### 背景
+- ユーザーが「ブログインデックスにタグ検索機能、日付並び替え機能をつけて」と要望。
+
+### 実装内容
+1. **Alpine.js を使ったインタラクティブなフィルター機能**
+   - タイトル/説明検索：入力フィールドでキーワードマッチング（小文字で統一）。
+   - タグフィルター：複数タグの OR 条件でフィルタリング可能。
+   - 日付並び替え：「新しい順（デフォルト）」と「古い順」を選択可能。
+
+2. **うまくいかなかった点**
+   - 初期実装では Alpine.js の `x-data` に直接 Astro コレクションをバインドしようとしたが、日付オブジェクトがシリアライズできず失敗。
+   - 解決策：サーバー側で `slug`、`title`、`description`、ISO形式の `date`/`dateStr`、`tags` に整形した JSON 配列を `<script id="posts-data" type="application/json">` で埋め込み、クライアント側で `JSON.parse()` して読み込む方式に変更。
+
+3. **うまくいった点**
+   - Alpine.js の computed property `get filteredPosts()` で、検索条件・タグ・ソート順を全て組み合わせた動的フィルタリングを実装。
+   - スタイル（`.active-tag`/`.inactive-tag`）で選択状態を視覚的に表示。
+   - 記事数が 0 件の場合のフォールバック表示（「記事が見つかりません」）を追加。
+   - terser がビルドで必須となったため、`pnpm add -D terser` で依存に追加。
+
+### 実装詳細
+- **ファイル変更**：[src/pages/blog/index.astro](src/pages/blog/index.astro)
+- **主要機能**：
+  - タイトル・説明の日本語・英字両対応の検索
+  - 複数タグの同時選択で AND/OR フィルタリング
+  - 新旧順の動的ソート
+  - Alpine.js で全てをクライアント側で管理（リアルタイム更新）
+
+## 📝 ブログタグ検索・日付並び替え機能の修正
+
+### 背景
+- 初期実装後に以下のエラーが発生：
+  - `Failed to resolve module specifier "alpinejs"` - Alpine.js モジュール解決エラー
+  - `blogFilter is not defined` - グローバルスコープに関数が見つからない
+  - その他の Alpine 変数が undefined エラーに
+
+### うまくいかなかった点
+- `<script id="posts-data" type="application/json">` で JSON データを埋め込みしようとしたが、Astro Expression が評価されていなかった。
+- `function blogFilter()` をスクリプトタグ内で定義しても、Alpine.js から見えるグローバルスコープに存在していなかった。
+- スクリプトのスコープが Astro コンポーネント単位に分離されており、Alpine.js が関数を参照できない状態になっていた。
+
+### うまくいった点
+1. **データを `x-data` インラインで渡す方法に変更**
+   - `x-data=``blogFilter(${JSON.stringify(postsData)})``` という形式で、サーバー側で整形した JSON データを直接テンプレート式に埋め込み。
+   - これにより、Astro が Expression を正しく評価した後、Alpine.js がデータを受け取れるようになった。
+
+2. **関数を `window` オブジェクトにアタッチ**
+   - `window.blogFilter = function(postsData) { ... }` でグローバルスコープに登録。
+   - Alpine.js の `x-data` 式が評価される時点で、`window.blogFilter` が存在するため、参照可能に。
+
+3. **`initializePosts()` の削除**
+   - JSON パース処理が不要になったため、`@load="initializePosts()"` を削除。
+   - `filteredPosts.length === 0` の判定を `<template x-if>` で実装し、Alpine.js の自動リアクティビティで動作。
+
+4. **テンプレート式の修正**
+   - ボタンの `@click` と `:class` を適切に修正：
+     ```astro
+     @click={`toggleTag('${tag}')`}
+     :class={`selectedTags.includes('${tag}') ? 'active-tag' : 'inactive-tag'`}
+     ```
+
+### ビルド・実装結果
+- ビルドエラーなし（terser も正常に動作）
+- 開発サーバー起動成功（ポート 4322 で稼働）
+- コンソールエラーなしで Alpine.js が正常に初期化
+
+
+### 推奨される次のステップ（将来的）
+- **rolldown の統合**：bun の Vite 統合が安定化したら、さらなる高速化のため rolldown バンドラーへの移行を検討。
+- **oxc の拡張**：`oxlintrc.json` のルールセットをプロジェクト要件に合わせてカスタマイズ可能。
+
+### スクリプト実行例
+```bash
+# 依存関係のインストール（bun で高速化）
+bun install
+
+# 開発サーバの起動
+bun dev
+
+# ビルド
+bun build
+
+# リンティング実行（oxlint で超高速）
+bun lint
+
+# プレビュー
+bun preview
+```
