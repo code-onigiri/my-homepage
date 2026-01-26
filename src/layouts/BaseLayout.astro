@@ -4,7 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import AlpineInit from "../components/AlpineInit.astro";
 
-const { title = 'code-onigiri' } = Astro.props;
+const { title = 'code-onigiri' , meta = "code-onigiri's homepage" } = Astro.props;
 
 const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const segments = pathname === "/" ? [] : pathname.split("/").filter(Boolean);
@@ -28,6 +28,7 @@ const breadcrumbs = [
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <meta name="description" content={meta} />
     <slot name="head" />
 
     <!-- set theme early to avoid flash -->
