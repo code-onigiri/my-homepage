@@ -4,16 +4,16 @@ import { Icon } from 'astro-icon/components';
 type Crumb = { label: string; href: string };
 const { breadcrumbs = [] as Crumb[] } = Astro.props;
 ---
-<header class="flex items-center justify-between gap-3 sm:gap-4 pb-5 border-b border-[color:var(--border)]">
-  <nav class="flex-1" aria-label="Breadcrumb">
-    <ol class="flex flex-wrap items-baseline gap-2 sm:gap-3 text-[0.95rem] leading-[1.1] lowercase m-0 p-0 list-none">
+<header class="flex items-center justify-between gap-3 border-b border-[color:var(--border)] pb-3 sm:pb-4 mb-4 min-h-[2.75rem]">
+  <nav class="flex items-center" aria-label="Breadcrumb">
+    <ol class="flex items-center sm:gap-3 text-[0.95rem] lowercase m-0 p-0 list-none leading-none">
       {breadcrumbs.map((item, index : number) => (
-        <li class="inline-flex items-baseline gap-2 text-[color:var(--muted)] leading-[1.1]">
-          {index > 0 && <span class="leading-[1.1] text-[color:color-mix(in_srgb,var(--muted)_70%,transparent)]">/</span>}
+        <li class="inline-flex items-center gap-2 text-[color:var(--muted)]">
+          {index > 0 && <span class="text-[color:color-mix(in_srgb,var(--muted)_70%,transparent)]">/</span>}
           {index === breadcrumbs.length - 1 ? (
-            <span class="text-[color:var(--text)] font-semibold leading-[1.1]">{item.label}</span>
+            <span class="text-[color:var(--text)] font-semibold">{item.label}</span>
           ) : (
-            <a class="text-[color:var(--text)] leading-[1.1] no-underline border-b-0 pb-0 hover:border-b-0 focus-visible:outline-none transition-colors duration-150" href={item.href}>
+            <a class="text-[color:var(--text)] no-underline hover:underline focus-visible:outline-none transition-colors duration-150" href={item.href}>
               {item.label}
             </a>
           )}
@@ -24,7 +24,7 @@ const { breadcrumbs = [] as Crumb[] } = Astro.props;
 
   <button
     id="theme-toggle"
-    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-transparent text-[color:var(--text)] transition duration-150 hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:color-mix(in_srgb,var(--accent)_50%,transparent)]"
+    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-transparent text-[color:var(--text)] transition duration-150 hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:color-mix(in_srgb,var(--accent)_50%,transparent)] self-center"
     aria-label="テーマの切り替え"
     @click="(dark = !dark, document.documentElement.classList.toggle('dark', dark), localStorage.setItem('theme', dark ? 'dark' : 'light'))"
   >

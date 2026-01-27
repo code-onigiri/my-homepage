@@ -35,7 +35,7 @@ const breadcrumbs = [
   </head>
   <body>
     <div
-      class="page-wrap min-h-screen flex flex-col gap-6 w-full sm:w-4/5 lg:w-3/5 max-w-5xl mx-auto px-6 sm:px-8 lg:px-10 py-10 sm:py-12"
+      class="page-wrap min-h-screen flex flex-col gap-6 w-full max-w-3xl mx-auto px-6 sm:px-8 py-4 sm:py-12"
       x-data="{ dark: false }"
       x-init="dark = (localStorage.getItem('theme') === 'dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.classList.toggle('dark', dark)"
     >

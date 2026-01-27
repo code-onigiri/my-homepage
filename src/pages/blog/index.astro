@@ -2,13 +2,15 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
-const posts = (await getCollection("blog")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
 const allTags = Array.from(new Set(posts.flatMap((post) => post.data.tags || []))).sort();
 const postsData = posts.map((post) => ({
   slug: post.slug,
   title: post.data.title,
   description: post.data.description || "",
-  date: post.data.date.toISOString(),
+  dateValue: post.data.date.valueOf(),
   dateStr: post.data.date.toISOString().slice(0, 10),
   tags: post.data.tags || [],
 }));
@@ -30,8 +32,7 @@ const postsData = posts.map((post) => ({
             id="search"
             placeholder="キーワードを入力..."
             x-model="searchQuery"
-            class="w-full px-3 py-2 border border-[color:var(--border)] rounded-md"
-            style="background: var(--bg); color: var(--text);"
+            class="form-field w-full"
           />
         </div>
         <div>
@@ -39,8 +40,7 @@ const postsData = posts.map((post) => ({
           <select
             id="sort"
             x-model="sortOrder"
-            class="px-3 py-2 border border-[color:var(--border)] rounded-md"
-            style="background: var(--bg); color: var(--text);"
+            class="form-field form-select"
           >
             <option value="desc">新しい順</option>
             <option value="asc">古い順</option>
@@ -57,9 +57,8 @@ const postsData = posts.map((post) => ({
               <button
                 type="button"
                 @click={`toggleTag('${tag}')`}
-                :class={`selectedTags.includes('${tag}') ? 'active-tag' : 'inactive-tag'`}
+                :class={`selectedTags.includes('${tag}') ? 'tag tag--active' : 'tag tag--inactive'`}
                 class="px-3 py-1 rounded-full text-xs transition-colors"
-                style="border: 1px solid var(--border);"
               >
                 {tag}
               </button>
@@ -83,7 +82,7 @@ const postsData = posts.map((post) => ({
           <template x-if="post.tags.length > 0">
             <div class="mt-2 flex flex-wrap gap-2 text-xs">
               <template x-for="tag in post.tags" :key="tag">
-                <span class="px-2 py-1 rounded-full" style="border:1px solid var(--border); color: var(--muted);">
+                <span class="tag-chip">
                   <span x-text="tag"></span>
                 </span>
               </template>
@@ -94,24 +93,10 @@ const postsData = posts.map((post) => ({
     </ul>
 
     <template x-if="filteredPosts.length === 0">
-      <p class="text-center text-muted py-8">記事が見つかりません</p>
+      <p class="text-center muted py-8">記事が見つかりません</p>
     </template>
   </section>
 </BaseLayout>
-
-<style>
-  .active-tag {
-    background-color: var(--border);
-    color: var(--text);
-  }
-  .inactive-tag {
-    background-color: transparent;
-    color: var(--muted);
-  }
-  .inactive-tag:hover {
-    background-color: var(--bg-secondary, rgba(255, 255, 255, 0.05));
-  }
-</style>
 
 <script>
   window.blogFilter = function(postsData) {
@@ -142,13 +127,8 @@ const postsData = posts.map((post) => ({
         }
 
         // ソート
-        filtered.sort((a, b) => {
-          if (this.sortOrder === "desc") {
-            return new Date(b.date).getTime() - new Date(a.date).getTime();
-          } else {
-            return new Date(a.date).getTime() - new Date(b.date).getTime();
-          }
-        });
+        const direction = this.sortOrder === "desc" ? -1 : 1;
+        filtered.sort((a, b) => (a.dateValue - b.dateValue) * direction);
 
         return filtered;
       },

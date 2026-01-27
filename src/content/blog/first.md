@@ -1,14 +1,14 @@
 ---
 title: "first post"
 description: "はじめてのブログ"
-date: 2025-01-26
+date: 2025-01-27
 tags: ["miscellaneous"]
 ---
 どうもcode-onigiriです。
 これ、意外と初の記事ですね。
 いろんなサイト触ってきてはいますけど、こんな感じでブログ書くとかやってないですね。
 
-因みに、今のところはこのcloudflare pagesのタダのやつcode-onigiri.pages.dev何ですが、
+因みに、今のところはこのcloudflare pagesのタダのやつcode-onigiri.pages.devなんですが、
 いずれcode-onigiri.dev取りたいですね。
 
 まあそれは置いておいて。
