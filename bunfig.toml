@@ -1,7 +1,7 @@
 # bun設定ファイル - ビルド・開発サーバーの最適化
 
 [run]
-shell = "bash"
+shell = "system"
 
 [install]
 # インストール速度の最適化

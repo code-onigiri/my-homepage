@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const formattedDate = post.data.date.toISOString().slice(0, 10);
-const { Content } = await post.render();
+const { Content, headings } = await post.render();
 ---
 <BaseLayout title={`${post.data.title} — blog`} meta={post.data.description}>
   <article class="flex flex-col gap-4 sm:gap-6 py-6 sm:py-10">
@@ -30,6 +30,22 @@ const { Content } = await post.render();
         </div>
       )}
     </div>
+
+    {post.data.toc && headings.length > 0 && (
+      <div class="toc-container" x-data="{ open: true }">
+        <div class="toc-header" @click="open = !open">
+          <h2 id="概要">概要</h2>
+          <span class="toc-toggle" x-text="open ? '▼' : '▶'"></span>
+        </div>
+        <ul class="toc-list" x-show="open" x-collapse>
+          {headings.map((heading) => (
+            <li class={`toc-level-${heading.depth}`}>
+              <a href={`#${heading.slug}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
 
     <div class="flex flex-col gap-4 leading-7" style="color: var(--text);">
       <Content />

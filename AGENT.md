@@ -166,6 +166,11 @@
 - 開発サーバー起動成功（ポート 4322 で稼働）
 - コンソールエラーなしで Alpine.js が正常に初期化
 
+## 📝 wrangler 設定（name バリデーションエラー）
+
+- うまくいかなかった: `wrangler.jsonc` の `name` にアポストロフィ付きの `code-onigiri's` を設定しており、Cloudflare Workers の名前規約（英数字とダッシュのみ）に違反して dev サーバーが起動時に失敗した。
+- うまくいった: `name` を `my-homepage` に変更し、規約に従った文字列にすることで `bun dev` / `astro dev` の起動時エラーが解消した。
+
 
 ### 推奨される次のステップ（将来的）
 - **rolldown の統合**：bun の Vite 統合が安定化したら、さらなる高速化のため rolldown バンドラーへの移行を検討。

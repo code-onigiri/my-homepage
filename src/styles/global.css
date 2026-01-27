@@ -70,18 +70,55 @@ h3 {
   margin-top: 1rem;
 }
 
-p, ul, ol {
-  margin: 0 0 1.05rem;
+p {
+  margin: 0 0 1.25rem;
   max-width: 62ch;
+  line-height: 1.8;
 }
 
 ul, ol {
-  padding-left: 1.35rem;
-  color: var(--muted);
+  margin: 0 0 1.5rem;
+  max-width: 62ch;
+  padding-left: 1.8rem;
+  line-height: 1.75;
+}
+
+ul {
+  list-style-type: none;
+}
+
+ul li {
+  position: relative;
+  padding-left: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+ul li::before {
+  content: "•";
+  position: absolute;
+  left: -1.2rem;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.2em;
+}
+
+ol {
+  list-style-type: decimal;
+  counter-reset: item;
+}
+
+ol li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.3rem;
+}
+
+ol li::marker {
+  color: var(--accent);
+  font-weight: 600;
 }
 
 li + li {
-  margin-top: 0.35rem;
+  margin-top: 0.5rem;
 }
 
 a {
@@ -95,6 +132,38 @@ a:hover {
   color: color-mix(in srgb, var(--accent) 80%, var(--text));
 }
 
+code {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  color: var(--accent);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: "Monaco", "Menlo", "Courier New", monospace;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+strong {
+  font-weight: 700;
+  color: var(--text);
+}
+
+em {
+  font-style: italic;
+  color: var(--text);
+}
+
+del {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
 blockquote {
   border-left: 2px solid color-mix(in srgb, var(--accent) 55%, var(--border));
   padding-left: 1rem;
@@ -105,3 +174,98 @@ blockquote {
 .muted { color: var(--muted); }
 
 img { max-width: 100%; height: auto; border-radius: 10px; }
+
+/* 目次（概要）のスタイリング */
+.toc-container {
+  margin: 1.5rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.toc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.5rem 0;
+}
+
+.toc-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.toc-toggle {
+  font-size: 0.8rem;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+
+.toc-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0 0 0.3rem 1.2rem;
+  line-height: 1.5;
+  font-size: 0.92rem;
+  max-width: 58ch;
+}
+
+.toc-list li {
+  margin-bottom: 0.25rem;
+  padding-left: 0;
+  position: relative;
+}
+
+.toc-list li::before {
+  content: none;
+}
+
+.toc-list a {
+  color: var(--muted);
+  transition: color 0.15s ease;
+  display: inline-block;
+}
+
+.toc-list a:hover {
+  color: var(--accent);
+}
+
+.toc-level-2 {
+  padding-left: 0;
+}
+
+.toc-level-2::before {
+  content: "■";
+  color: var(--accent);
+  font-size: 0.5rem;
+  margin-right: 0.5rem;
+  opacity: 0.7;
+}
+
+.toc-level-3 {
+  padding-left: 1.2rem;
+  font-size: 0.88rem;
+}
+
+.toc-level-3::before {
+  content: "▸";
+  color: var(--accent);
+  font-size: 0.7rem;
+  margin-right: 0.4rem;
+  opacity: 0.6;
+}
+
+.toc-level-4 {
+  padding-left: 2.4rem;
+  font-size: 0.85rem;
+}
+
+.toc-level-4::before {
+  content: "·";
+  color: var(--muted);
+  font-size: 1rem;
+  margin-right: 0.4rem;
+  opacity: 0.5;
+}
