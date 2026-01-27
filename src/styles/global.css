@@ -13,6 +13,52 @@
   --font-mono: "JetBrains Mono", "SFMono-Regular", "Menlo", "Monaco", "Courier New", monospace;
 }
 
+:where(:root) {
+  overflow-wrap: anywhere;
+  line-break: strict;
+  text-autospace: normal;
+  text-spacing-trim: trim-start;
+}
+
+:where(pre, time, input:not([type="button" i], [type="submit" i], [type="reset" i]), textarea, [contenteditable]) {
+  text-autospace: no-autospace;
+}
+
+:where(pre) {
+  text-spacing-trim: space-all;
+}
+
+:where(:lang(en)) {
+  font-kerning: normal;
+}
+
+:where(:lang(ja)) {
+  font-kerning: none;
+}
+
+:where(h1, h2, h3, h4, h5, h6, caption) {
+  font-kerning: normal;
+}
+
+:where(h1, h2, h3, h4, h5, h6, caption):lang(en) {
+  text-wrap: balance;
+}
+
+:where(h1, h2, h3, h4, h5, h6, caption):lang(ja) {
+  font-feature-settings: "palt";
+}
+
+@supports (word-break: auto-phrase) {
+  :where(h1, h2, h3, h4, h5, h6, caption):lang(ja) {
+    word-break: auto-phrase;
+    text-wrap: balance;
+  }
+}
+
+:where(p:lang(en)) {
+  text-wrap: pretty;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0c1016;
@@ -190,6 +236,14 @@ em {
   color: var(--text);
 }
 
+:where(em:lang(ja)) {
+  font-weight: bolder;
+}
+
+:where(:is(address, i, cite, em, dfn):lang(ja)) {
+  font-style: unset;
+}
+
 del {
   text-decoration: line-through;
   opacity: 0.7;
@@ -305,3 +359,108 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
 .toc-level-2 { margin-left: 0.75rem; }
 .toc-level-3 { margin-left: 1.5rem; }
 .toc-level-4 { margin-left: 2.25rem; }
+
+.-fluid-text {
+  --_u-relative-max-width: var(--fluid-text--relative-max-width, 1280);
+  --_u-relative-min-width: var(--fluid-text--relative-min-width, 375);
+  --_u-min-font-size: var(--fluid-text--min-font-size, 14);
+  --_u-max-font-size: var(--fluid-text--max-font-size, 16);
+  --_u-base-font-size: var(--fluid-text--base-font-size, 16);
+  --_u-relative-unit: var(
+    --fluid-text--relative-unit,
+    100svi
+  );
+
+  --_u-fluid-slope: calc(
+    (var(--_u-max-font-size) - var(--_u-min-font-size)) /
+      (var(--_u-relative-max-width) - var(--_u-relative-min-width))
+  );
+  --_u-fluid-intercept: calc(
+    var(--_u-min-font-size) - var(--_u-fluid-slope) *
+      var(--_u-relative-min-width)
+  );
+
+  font-size: clamp(
+    var(--_u-min-font-size) / var(--_u-base-font-size) * 1rem,
+    var(--_u-fluid-slope) * var(--_u-relative-unit) + var(--_u-fluid-intercept) /
+      var(--_u-base-font-size) * 1rem,
+    var(--_u-max-font-size) / var(--_u-base-font-size) * 1rem
+  );
+}
+
+.-text-center {
+  text-align: center;
+  text-wrap: balance;
+}
+
+.-trim-both {
+  text-box-trim: trim-both;
+}
+
+.-trim-both:lang(en) {
+  text-box-edge: cap alphabetic;
+}
+
+.-kerning {
+  font-kerning: normal;
+}
+
+.-kerning:lang(ja) {
+  font-feature-settings: "palt";
+}
+
+@supports (word-break: auto-phrase) {
+  .-auto-phrase:lang(ja) {
+    word-break: auto-phrase;
+    text-wrap: balance;
+  }
+}
+
+.-hanging {
+  hanging-punctuation: last allow-end;
+}
+
+.-hanging:lang(en) {
+  hanging-punctuation: first allow-end last;
+}
+
+.-uppercase {
+  text-transform: uppercase;
+}
+
+.-hyphens {
+  hyphens: auto;
+}
+
+.-tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.-line-clamp {
+  display: -webkit-box;
+  overflow-block: clip;
+  -webkit-box-orient: block-axis;
+  -webkit-line-clamp: var(--line-clamp--limit, 3);
+}
+
+@supports not (overflow-block: clip) {
+  .-line-clamp {
+    overflow-y: clip;
+  }
+}
+
+.-br {
+  display: contents;
+}
+
+.-br:lang(ja) {
+  display: block flow;
+}
+
+.-wbr {
+  display: contents;
+}
+
+.-wbr:lang(ja) {
+  display: inline flow-root;
+}
