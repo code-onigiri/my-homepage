@@ -1,0 +1,27 @@
+backend:
+  name: github
+  repo: code-onigiri/my-homepage
+  branch: main
+  base_url: https://decap-oauth.code-onigiri.workers.dev
+  auth_endpoint: auth
+
+local_backend: true
+
+media_folder: "public/assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "blog"
+    label: "Blog"
+    folder: "src/content/blog"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string", required: false }
+      - { label: "Date", name: "date", widget: "datetime", time_format: false, format: "YYYY-MM-DD" }
+      - { label: "Tags", name: "tags", widget: "list", required: false, allow_add: true }
+      - { label: "TOC", name: "toc", widget: "boolean", required: false, default: false }
+      - { label: "Body", name: "body", widget: "markdown" }
