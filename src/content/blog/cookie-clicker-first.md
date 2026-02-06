@@ -2,7 +2,7 @@
 title: "はじめてのクッキークリッカー"
 description: "ここまで人を惹きつけるゲームあったんだ"
 date: 2025-02-06
-tags: ["cookie_clicker"]
+tags: ["cookie_clicker","game"]
 ---
 更新してないですね。
 
@@ -12,7 +12,7 @@ tags: ["cookie_clicker"]
 
 最近、クッキークリッカーやっていて
 だいたい六日目ですね。
-![クッキークリッカーの画像](../../../public/assets/cookie-cliker.png)
+![クッキークリッカーの画像](/assets/cookie-clicker.png)
 
 なかなかうまくできているもので、いい感じに一日またいで新しい施設が買えてとっても楽しいです。
 
