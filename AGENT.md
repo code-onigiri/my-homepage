@@ -110,3 +110,8 @@
   3. Cloudflare Pages ダッシュボードの Secrets に `KEYSTATIC_GITHUB_CLIENT_SECRET` / `KEYSTATIC_SECRET` が正確に設定されているか再確認（コピペ末尾の空白・改行に注意）。
   4. デバッグ用に一時的にレスポンスをログ出力して GitHub からの実際のエラー内容を確認するのが最速。
 - なぜうまくいったか: GitHub App 設定の「Optional features」→「User-to-server token expiration」を Opt-in で有効化したことで、OAuth トークン交換のレスポンスに `refresh_token`・`expires_in`・`refresh_token_expires_in` が含まれるようになり、Keystatic の superstruct バリデーションが通るようになった。この設定は GitHub App 作成時にデフォルト無効の場合があり、Keystatic のドキュメントにも明記が薄い盲点。
+
+---
+**追記13（CMS カスタマイズ）**
+- うまくいかなかったこと: `@cloudflare/workerd-linux-64` を手動インストールした副作用で esbuild のバージョン衝突が発生し、ビルドが `callback is not a function` エラーで失敗した。
+- なぜうまくいったか: 不要パッケージを削除しキャッシュをクリアして解消。カスタマイズ自体は `keystatic.config.ts` のスキーマ追加（draft, image, multiline description）と `content/config.ts` の同期、記事一覧での `draft` フィルタ実装をセットで行い整合性を保った。
