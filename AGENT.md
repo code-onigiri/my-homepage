@@ -95,3 +95,18 @@
 - うまくいかなかったこと: `/api/keystatic/github/login` がデプロイ環境で 500 空ボディを返す。`@keystatic/core` の `makeGenericAPIRouteHandler` は環境変数が不足すると同期的に `throw` し、エラー本文がレスポンスに含まれないため原因が見えにくかった。`import.meta.env.*` はビルド時しか解決されず、`process.env.*` は CF Workers で空オブジェクトのため、フォールバックチェーンが全段失敗する構造だった。
 - なぜわかったか: `@keystatic/astro` → `@keystatic/core/api/generic`（worker export）→ `@astrojs/cloudflare/dist/utils/handler.js` のコードパスを全て読み、環境変数の優先順位（config → locals.runtime.env → import.meta.env → process.env）と throw 条件を特定した。Cloudflare Pages ダッシュボードの Production/Preview 環境区別・再デプロイ要件が見落とされやすい原因であることを確認した。
 - なぜうまくいったか: Cloudflare Pages ダッシュボードで Production 環境に4変数すべてを設定し、新しいデプロイをトリガーしたことで `context.locals.runtime.env` 経由で正しく読み込まれた。`wrangler.jsonc` の `vars` だけでは Cloudflare Pages の GitHub 連携デプロイに反映されないため、ダッシュボード設定が必須。
+
+---
+**追記12（OAuth callback 401 "Authorization failed" 調査）**
+- うまくいかなかったこと: GitHub OAuth 認可後のコールバック `/api/keystatic/github/oauth/callback` で 401 が返る。エラーメッセージが `Authorization failed` の一言しかなく、GitHub API からの実際のレスポンス内容がログにも表示されないため原因が掴みにくかった。
+- なぜわかったか: `@keystatic/core/dist/keystatic-core-api-generic.worker.js` の `githubOauthCallback` 関数を全行読み、401 が返る箇所が2つあることを特定した。(1) `tokenRes.ok` が false の場合（GitHub API が非200を返す）、(2) `tokenDataResultType.create()` で superstruct バリデーション失敗の場合。GitHub の `/login/oauth/access_token` はエラー時も 200 を返すため、実際には (2) が発火する可能性が高い。`tokenDataResultType` は `expires_in`, `refresh_token`, `refresh_token_expires_in` を必須としており、GitHub App の「Expire user authorization tokens」が有効でないと返らないフィールド。
+- 最も可能性が高い原因:
+  1. **Cloudflare に設定した `KEYSTATIC_GITHUB_CLIENT_SECRET` の値が不正**: GitHub が 200 + `{ error: "incorrect_client_credentials" }` を返し、スキーマ不一致で catch → 401。
+  2. **GitHub App の「Expire user authorization tokens」が無効**: トークンレスポンスに `refresh_token` 等がなくスキーマ不一致 → 401。
+  3. **Callback URL 不一致**: GitHub App に `https://code-onigiri.pages.dev/api/keystatic/github/oauth/callback` が登録されていない。
+- 修正手順:
+  1. GitHub App 設定 (`https://github.com/settings/apps/for-my-homepage`) で「Expire user authorization tokens」が有効か確認。
+  2. Callback URL に `https://code-onigiri.pages.dev/api/keystatic/github/oauth/callback` が含まれているか確認。
+  3. Cloudflare Pages ダッシュボードの Secrets に `KEYSTATIC_GITHUB_CLIENT_SECRET` / `KEYSTATIC_SECRET` が正確に設定されているか再確認（コピペ末尾の空白・改行に注意）。
+  4. デバッグ用に一時的にレスポンスをログ出力して GitHub からの実際のエラー内容を確認するのが最速。
+- なぜうまくいったか: GitHub App 設定の「Optional features」→「User-to-server token expiration」を Opt-in で有効化したことで、OAuth トークン交換のレスポンスに `refresh_token`・`expires_in`・`refresh_token_expires_in` が含まれるようになり、Keystatic の superstruct バリデーションが通るようになった。この設定は GitHub App 作成時にデフォルト無効の場合があり、Keystatic のドキュメントにも明記が薄い盲点。
