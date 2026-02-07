@@ -6,6 +6,6 @@
 
 ## AIに向けでも言っておこう
 
-これ使う時はpnpmを使って。
+これ使う時はbunを使って。
 
 あとAstro+alpine.js+tailwindcssやから。
