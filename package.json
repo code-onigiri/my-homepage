@@ -12,11 +12,17 @@
   "dependencies": {
     "@astrojs/alpinejs": "^0.4.9",
     "@astrojs/cloudflare": "^12.6.12",
+    "@astrojs/markdoc": "^0.15.10",
+    "@astrojs/react": "^4.4.2",
+    "@keystatic/astro": "^5.0.6",
+    "@keystatic/core": "^0.5.48",
     "@tailwindcss/vite": "^4.1.18",
     "@types/alpinejs": "^3.13.11",
     "alpinejs": "^3.15.4",
     "astro": "^5.16.15",
     "astro-icon": "^1.1.5",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {

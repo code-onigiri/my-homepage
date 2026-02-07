@@ -5,7 +5,10 @@ const blog = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    date: z.date(),
+    // Keystatic は YYYY-MM-DD 文字列を出力するため、文字列も受け付けて Date に変換
+    date: z.union([z.date(), z.string()]).transform((val) =>
+      typeof val === 'string' ? new Date(val) : val
+    ),
     tags: z.array(z.string()).default([]),
     toc: z.boolean().optional().default(false),
   }),

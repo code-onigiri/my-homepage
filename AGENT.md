@@ -78,3 +78,9 @@
 **追記8**
 - うまくいかなかったこと: WorkersにOAuthを置く前提だけを先に決めたため、必要なエンドポイントや環境変数が曖昧で手順が見えにくかった。
 - なぜうまくいったか: /auth と /callback の最小実装を先に用意し、必要な環境変数を明文化したことで導入手順が具体化できた。
+
+---
+**追記9（Keystatic CMS 導入）**
+- うまくいかなかったこと（過去の試行）: Decap CMS + 自前 OAuth プロキシの構成は、認証フローの実装・デバッグ負荷が高く、Cloudflare Workers 上での動作確認に多くの工数がかかった。
+- うまくいかなかったこと（今回）: Astro 5 では `output: 'hybrid'` が廃止されており、そのまま指定するとビルドエラーになった。また `fields.markdoc()` を使うと `.mdoc` 拡張子が必要で、既存の `.md` ファイルが Keystatic の一覧に表示されなかった。
+- なぜうまくいったか: Keystatic を採用し `@keystatic/astro` がルーティング・API を自動注入するため、手動の OAuth プロキシが不要になった。`output: 'server'` + 各ページに `export const prerender = true` を追加することで、既存ページは静的プリレンダリング、Keystatic 管理画面だけ SSR で動作する構成が実現できた。`.md` → `.mdoc` リネーム + `@astrojs/markdoc` 追加で Keystatic のコンテンツ記法と統一し、`keystatic.config.ts` で `import.meta.env.PROD` による local/github モード自動切替を設定した。
