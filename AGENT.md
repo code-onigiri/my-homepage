@@ -84,3 +84,8 @@
 - うまくいかなかったこと（過去の試行）: Decap CMS + 自前 OAuth プロキシの構成は、認証フローの実装・デバッグ負荷が高く、Cloudflare Workers 上での動作確認に多くの工数がかかった。
 - うまくいかなかったこと（今回）: Astro 5 では `output: 'hybrid'` が廃止されており、そのまま指定するとビルドエラーになった。また `fields.markdoc()` を使うと `.mdoc` 拡張子が必要で、既存の `.md` ファイルが Keystatic の一覧に表示されなかった。
 - なぜうまくいったか: Keystatic を採用し `@keystatic/astro` がルーティング・API を自動注入するため、手動の OAuth プロキシが不要になった。`output: 'server'` + 各ページに `export const prerender = true` を追加することで、既存ページは静的プリレンダリング、Keystatic 管理画面だけ SSR で動作する構成が実現できた。`.md` → `.mdoc` リネーム + `@astrojs/markdoc` 追加で Keystatic のコンテンツ記法と統一し、`keystatic.config.ts` で `import.meta.env.PROD` による local/github モード自動切替を設定した。
+
+---
+**追記10（GitHub App 連携）**
+- うまくいかなかったこと: `.env` の変更で Vite が何度もホットリロードを繰り返し、`virtual:keystatic-config` の解決エラーが発生してサーバーが不安定になった。`KEYSTATIC_SECRET` が空のまま放置されていた。
+- なぜうまくいったか: GitHub App は Keystatic のセットアップ UI（`/keystatic/setup`）経由で作成し、`CLIENT_ID` と `CLIENT_SECRET` が `.env` に自動設定された。`KEYSTATIC_SECRET` は `openssl rand -hex 32` で生成し、`PUBLIC_KEYSTATIC_GITHUB_APP_SLUG` は GitHub App 設定ページの slug を手動で確認して追記した。`.env` 編集中は dev サーバーを停止してから再起動することで不安定さを回避できた。Cloudflare Pages デプロイには同じ4変数をダッシュボードで設定すればよい。
