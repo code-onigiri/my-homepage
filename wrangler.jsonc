@@ -12,5 +12,12 @@
 	},
 	"observability": {
     "enabled": true
+  },
+  // Keystatic CMS 用の公開環境変数
+  // シークレット (KEYSTATIC_GITHUB_CLIENT_SECRET, KEYSTATIC_SECRET) は
+  // Cloudflare ダッシュボード → Settings → Variables and Secrets で設定すること
+  "vars": {
+    "KEYSTATIC_GITHUB_CLIENT_ID": "Iv23livo7UdUKjYLgdIn",
+    "PUBLIC_KEYSTATIC_GITHUB_APP_SLUG": "for-my-homepage"
   }
 }

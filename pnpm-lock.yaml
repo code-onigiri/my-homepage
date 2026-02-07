@@ -51,6 +51,9 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18
     devDependencies:
+      '@cloudflare/workerd-linux-64':
+        specifier: ^1.20260207.0
+        version: 1.20260207.0
       '@iconify-json/line-md':
         specifier: ^1.2.14
         version: 1.2.14
@@ -259,6 +262,12 @@ packages:
 
   '@cloudflare/workerd-linux-64@1.20251118.0':
     resolution: {integrity: sha512-aT97GnOAbJDuuOG0zPVhgRk0xFtB1dzBMrxMZ09eubDLoU4djH4BuORaqvxNRMmHgKfa4T6drthckT0NjUvBdw==}
+    engines: {node: '>=16'}
+    cpu: [x64]
+    os: [linux]
+
+  '@cloudflare/workerd-linux-64@1.20260207.0':
+    resolution: {integrity: sha512-BHgVfHkRgs0BLM5x2duI4KoeRemrVxbGu27hyopOju96qhA/8QhafuVuH+eMdbW1pYPdxrKKrj7IhcwCYe0b/g==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [linux]
@@ -4051,6 +4060,8 @@ snapshots:
 
   '@cloudflare/workerd-linux-64@1.20251118.0':
     optional: true
+
+  '@cloudflare/workerd-linux-64@1.20260207.0': {}
 
   '@cloudflare/workerd-linux-arm64@1.20251118.0':
     optional: true
