@@ -89,3 +89,9 @@
 **追記10（GitHub App 連携）**
 - うまくいかなかったこと: `.env` の変更で Vite が何度もホットリロードを繰り返し、`virtual:keystatic-config` の解決エラーが発生してサーバーが不安定になった。`KEYSTATIC_SECRET` が空のまま放置されていた。
 - なぜうまくいったか: GitHub App は Keystatic のセットアップ UI（`/keystatic/setup`）経由で作成し、`CLIENT_ID` と `CLIENT_SECRET` が `.env` に自動設定された。`KEYSTATIC_SECRET` は `openssl rand -hex 32` で生成し、`PUBLIC_KEYSTATIC_GITHUB_APP_SLUG` は GitHub App 設定ページの slug を手動で確認して追記した。`.env` 編集中は dev サーバーを停止してから再起動することで不安定さを回避できた。Cloudflare Pages デプロイには同じ4変数をダッシュボードで設定すればよい。
+
+---
+**追記11（Keystatic API 500 エラー調査）**
+- うまくいかなかったこと: `/api/keystatic/github/login` がデプロイ環境で 500 空ボディを返す。`@keystatic/core` の `makeGenericAPIRouteHandler` は環境変数が不足すると同期的に `throw` し、エラー本文がレスポンスに含まれないため原因が見えにくかった。`import.meta.env.*` はビルド時しか解決されず、`process.env.*` は CF Workers で空オブジェクトのため、フォールバックチェーンが全段失敗する構造だった。
+- なぜわかったか: `@keystatic/astro` → `@keystatic/core/api/generic`（worker export）→ `@astrojs/cloudflare/dist/utils/handler.js` のコードパスを全て読み、環境変数の優先順位（config → locals.runtime.env → import.meta.env → process.env）と throw 条件を特定した。Cloudflare Pages ダッシュボードの Production/Preview 環境区別・再デプロイ要件が見落とされやすい原因であることを確認した。
+- なぜうまくいったか: Cloudflare Pages ダッシュボードで Production 環境に4変数すべてを設定し、新しいデプロイをトリガーしたことで `context.locals.runtime.env` 経由で正しく読み込まれた。`wrangler.jsonc` の `vars` だけでは Cloudflare Pages の GitHub 連携デプロイに反映されないため、ダッシュボード設定が必須。
