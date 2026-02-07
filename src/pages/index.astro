@@ -4,7 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import LatestPosts from "../components/LatestPosts.astro";
 import { getCollection } from "astro:content";
 
-const posts = await getCollection("blog");
+const posts = (await getCollection("blog")).filter((post) => !post.data.draft);
 ---
 
 <BaseLayout title="Home — code-onigiri">

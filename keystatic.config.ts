@@ -10,7 +10,7 @@ export default config({
     },
   },
   ui: {
-    brand: { name: 'code-onigiri CMS' },
+    brand: { name: '🍙 code-onigiri CMS' },
     navigation: {
       コンテンツ: ['blog'],
     },
@@ -24,6 +24,7 @@ export default config({
       format: {
         contentField: 'content',
       },
+      columns: ['date', 'draft'],
       schema: {
         title: fields.slug({
           name: {
@@ -33,10 +34,22 @@ export default config({
         }),
         description: fields.text({
           label: '説明',
+          multiline: true,
         }),
         date: fields.date({
           label: '投稿日',
           validation: { isRequired: true },
+        }),
+        draft: fields.checkbox({
+          label: '下書き',
+          description: '有効にすると本番サイトに表示されません',
+          defaultValue: false,
+        }),
+        image: fields.image({
+          label: 'アイキャッチ画像',
+          description: 'OGP やブログ一覧で表示される画像',
+          directory: 'public/assets/blog',
+          publicPath: '/assets/blog/',
         }),
         tags: fields.array(
           fields.text({ label: 'タグ' }),

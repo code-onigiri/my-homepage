@@ -26,7 +26,6 @@
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "@cloudflare/workerd-linux-64": "^1.20260207.0",
     "@iconify-json/line-md": "^1.2.14",
     "@iconify-json/tabler": "^1.2.26",
     "@oxc-parser/wasm": "^0.60.0",

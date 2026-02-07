@@ -9,6 +9,8 @@ const blog = defineCollection({
     date: z.union([z.date(), z.string()]).transform((val) =>
       typeof val === 'string' ? new Date(val) : val
     ),
+    draft: z.boolean().optional().default(false),
+    image: z.string().optional(),
     tags: z.array(z.string()).default([]),
     toc: z.boolean().optional().default(false),
   }),
