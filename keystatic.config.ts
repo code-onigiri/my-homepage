@@ -1,21 +1,14 @@
 import { config, fields, collection } from '@keystatic/core';
 
-const isProd = import.meta.env.PROD;
-
 export default config({
-  // ローカル: local モード（ファイル直接読み書き）
-  // 本番: github モード（GitHub API 経由でコミット＆プッシュ）
-  storage: isProd
-    ? {
-        kind: 'github',
-        repo: {
-          owner: 'code-onigiri',
-          name: 'my-homepage',
-        },
-      }
-    : {
-        kind: 'local',
-      },
+  // GitHub モード: GitHub API 経由でコミット＆プッシュ
+  storage: {
+    kind: 'github',
+    repo: {
+      owner: 'code-onigiri',
+      name: 'my-homepage',
+    },
+  },
   ui: {
     brand: { name: 'code-onigiri CMS' },
     navigation: {
