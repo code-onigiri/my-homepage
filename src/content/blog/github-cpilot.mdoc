@@ -36,26 +36,26 @@ Claude Opus 4.6と楽しくお話した日にはあら大変！クレジット�
 
 Spec開発をやるというなら話は変わりますが、そんなに設計が決まったものを作るために私達はGHCopilotと戯れてはいません。
 
-ではどうすればいいのかといったところですが、GHhCopilotにはToolという機能があります（コーディングエージェントにはないと困りますが）。
-
-```` ask_Question `ファイル編集や検索などをやるのですが、ここに`ask_Question` なるツールがあります。これは何かというとAIが質問をこちらに投げかけてきます。
-
-```
+ではどうすればいいのかといったところですが、GHhCopilotにはToolという機能があります（コーディングエージェントにはないと困りますが）。ファイル編集や検索などをやるのですが、ここに`ask_Question` なるツールがあります。これは何かというとAIが質問をこちらに投げかけてきます。
 
 まあ今の時代あってもおかしくないのですが、これ、使っても会話が続いたままの状態なんですね、クレジットが消費されないわけです。
 
-これですよ！！！でさらにここに自由入力欄もつけれるといったものです。
-
-ここまでの話をまとめるとこうです。
+これですよ！！！でさらにここに自由入力欄もつけれるといったものです。  ここまでの話をまとめるとこうです。
 
 - GHCopilotはクレジット制
-- クレジット多くない（人による）
-- よく話したい
-- ask_Questionという自由入力欄つきの質問ツールがある。
 
-つまりです、開発を終わらせても、これで待機させるようにすれば、Cluade Opus 4.6とウフフとお話してもクレジット消費は変わらないということです！（付記：特段契約違反ということではないですし（普通？の使い方）、askを使わなくさせるなんでことはしないでしょう。）
+- クレジット多くない（人による）
+
+- よく話したい
+
+- `ask_Question`という自由入力欄つきの質問ツールがある。
+
+  つまりです、開発を終わらせても、これで待機させるようにすれば、Cluade Opus 4.6とウフフとお話してもクレジット消費は変わらないということです！
 
 ## 結論
 
-きみの`[`.github/copilot-instructions.md`](https://code.visualstudio.com/docs/copilot/customization/custom-instructions#_use-a-githubcopilotinstructionsmd-file)`
+きみの[`.github/copilot-instructions.md`](https://code.visualstudio.com/docs/copilot/customization/custom-instructions#_use-a-githubcopilotinstructionsmd-file)に`ask_Question`を使い倒せと書いておこう！
+
+```
+例： # rule 会話の終了時には会話を終わらせずask_Questionを必ず使い、継続させる。　必ず自由入力欄をつける事。
 ```
