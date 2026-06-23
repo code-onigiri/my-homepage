@@ -40,7 +40,7 @@ const breadcrumbs = [
     <div
       class="page-wrap min-h-screen flex flex-col gap-6 w-full max-w-3xl mx-auto px-6 sm:px-8 py-4 sm:py-12"
       x-data="{ dark: false }"
-      x-init="dark = (localStorage.getItem('theme') === 'dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.classList.toggle('dark', dark)"
+      x-init="dark = document.documentElement.classList.contains('dark')"
     >
       <Header breadcrumbs={breadcrumbs} />
 

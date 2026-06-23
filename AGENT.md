@@ -115,3 +115,23 @@
 **追記13（CMS カスタマイズ）**
 - うまくいかなかったこと: `@cloudflare/workerd-linux-64` を手動インストールした副作用で esbuild のバージョン衝突が発生し、ビルドが `callback is not a function` エラーで失敗した。
 - なぜうまくいったか: 不要パッケージを削除しキャッシュをクリアして解消。カスタマイズ自体は `keystatic.config.ts` のスキーマ追加（draft, image, multiline description）と `content/config.ts` の同期、記事一覧での `draft` フィルタ実装をセットで行い整合性を保った。
+
+---
+**追記14（Astro 6 移行）**
+- うまくいかなかったこと: Astro 6 へ上げた直後、`src/content/config.ts` の旧配置と `wrangler.jsonc` の旧 `main` (`dist/_worker.js/index.js`) が原因でビルドに失敗した。さらに `bunfig.toml` の `optional = false` により Rollup/Oxlint の optional native 依存が入らず、検証自体が不安定だった。
+- なぜうまくいったか: `src/content.config.ts` への移行、`wrangler.jsonc` の `main` を `@astrojs/cloudflare/entrypoints/server` へ更新、`optional = true` への修正をセットで行ったことで、Astro 6 + Cloudflare 構成で `bun run build` まで通せた。加えて `flake.nix` を先に作り Node 22 / Bun 環境を固定したことで、再現可能な移行手順にできた。
+
+---
+**追記15（`virtual:keystatic-config` 解決エラー）**
+- うまくいかなかったこと: Astro 6 環境で `virtual:keystatic-config` が解決されず、esbuild 側で `Unexpected end of JSON input` と連鎖して dev/build が落ちることがあった。`@keystatic/astro@5.0.6` は peer が Astro 5 までで、解決フックが環境によって不安定化しやすかった。
+- なぜうまくいったか: `astro.config.mjs` で `virtual:keystatic-config` を `keystatic.config.ts` の実パスへ明示 alias したことで、解決経路を固定できた。これにより `bun run build` と `bun run dev` 起動確認の両方で同エラーが再発しない状態まで戻せた。
+
+---
+**追記16（`module is not defined` in workerd）**
+- うまくいかなかったこと: Cloudflare/workerd 開発実行時に `debug/src/index.js` が CJS のまま評価され、`module is not defined` で SSR リクエストが 500 になった。
+- なぜうまくいったか: `astro.config.mjs` に server/prerender 側だけ `optimizeDeps.include: ['debug']` を入れる Vite プラグインを追加し、CJS 依存を事前最適化して ESM 実行経路へ寄せた。修正後は `bun run dev` + `/` への実リクエストで 200 を確認できた。
+
+---
+**追記17（ブログ非表示 + ダークモード固定）**
+- うまくいかなかったこと: Astro 6 の content layer 移行後も `post.slug` / `post.render()` 前提を残したため、`getStaticPaths` で slug 欠落や記事描画エラーが起き、ブログ一覧・詳細が崩れた。テーマは `x-init` が「保存設定よりシステムダーク優先」になっていて、light 保存時でも dark へ戻るケースがあった。
+- なぜうまくいったか: `src/content.config.ts` を `glob` loader 方式へ移行し、`post.id` と `render(post)` に合わせてページ側を更新したことで、記事一覧/詳細の生成が復旧した。テーマは `theme-init.js` が付けた `html.dark` 状態を `x-init` で読む形に統一し、保存済み light/dark を上書きしない挙動に揃えられた。

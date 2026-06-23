@@ -13,7 +13,7 @@ const sortedPosts = [...posts]
   .slice(0, limit);
 
 const serializedPosts = sortedPosts.map((post) => ({
-  slug: post.slug,
+  slug: post.id,
   date: post.data.date.toISOString().slice(0, 10),
   title: post.data.title,
   description: post.data.description ?? null,
@@ -31,7 +31,7 @@ const serializedPosts = sortedPosts.map((post) => ({
   <ul class="list-none m-0 p-0 flex flex-col gap-4" x-show="!mounted">
     {sortedPosts.map((post) => (
       <li>
-        <a class="no-underline" href={`/blog/${post.slug}/`}>
+        <a class="no-underline" href={`/blog/${post.id}/`}>
           <div class="text-sm muted">{post.data.date.toISOString().slice(0, 10)}</div>
           <h3 class="m-0 mt-1 text-lg font-semibold">{post.data.title}</h3>
           {post.data.description && <p class="muted m-0 mt-1">{post.data.description}</p>}
