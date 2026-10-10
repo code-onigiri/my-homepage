@@ -15,7 +15,7 @@ const posts = (await getCollection("blog")).filter((post) => !post.data.draft);
 
   <section class="border-l-3 border-[var(--border)] pl-4">
     <h2>なんやねんこいつ(自己紹介)</h2>
-    <p>名古屋県在住の学生プログラマー</p>
+    <p>名古屋県在住のプログラマー</p>
     <p>おにぎり、というか食べ物全般が好き。</p>
     <p>好きな言語：Rust,Java,TypeScript,C++</p>
     <p>好きなフレームワークとかライブラリソフト系列：React,Svelte,Alpine.js/NeoForge/Godot,bevy</p>
@@ -23,6 +23,7 @@ const posts = (await getCollection("blog")).filter((post) => !post.data.draft);
     <p>何かになれるようでなれない人間（似非哲学）</p>
     <p>新しい物大好きマン、oxclintが最近のお気に入り。</p>
     <p>特徴：コード書くの遅いし、しょっちゅうAIに頼ってるし、詭弁ばっか振りかざす人、あと広く浅くしか理解していない。</p>
+    <p>注：更新は気が向いた時にしかしません、それにADHDぎみという情報を合わせると...ほぼ更新しません、よく出来たソフトウェアか面白いゲームにでも出会ったら、紹介しときます</p>
   </section>
 
   <LatestPosts posts={posts} />
